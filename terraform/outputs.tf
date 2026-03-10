@@ -32,3 +32,7 @@ output "load_balancer_dns" {
   description = "ALB DNS"
   value       = aws_lb.alb.dns_name
 }
+output "ecs_service_name" {
+  value = aws_ecs_service.angular_service.name
+}
+
