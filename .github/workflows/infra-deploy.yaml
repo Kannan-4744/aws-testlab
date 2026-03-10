@@ -2,8 +2,10 @@ name: Infrastructure Deployment
 
 on:
  push:
-  paths:
-  - 'terraform/**'
+    branches:
+      - aws
+    paths:
+    - 'terraform/**'
 
 env:
  AWS_REGION: eu-west-1
