@@ -32,18 +32,16 @@ jobs:
       run: |
         cd terraform
         terraform init
-
-    - name: Terraform Plan
-      run: |
-        cd terraform
-        terraform plan
-
-    - name: Terraform Apply
-      run: |
-        cd terraform
-        terraform apply -auto-approve
-
-    - name: Show Terraform Outputs
-      run: |
-        cd terraform
-        terraform output
+        terraform destroy -auto-approve
+    # - name: Terraform Plan
+    #   run: |
+    #     cd terraform
+    #     terraform plan
+    # - name: Terraform Apply
+    #   run: |
+    #     cd terraform
+    #     terraform apply -auto-approve
+    # - name: Show Terraform Outputs
+    #   run: |
+    #     cd terraform
+    #     terraform output
