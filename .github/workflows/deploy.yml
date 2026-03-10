@@ -1,7 +1,10 @@
-name: Infrastructure Deployment
+name: Application Deployment
 
 on:
  workflow_dispatch:
+ push:
+  paths:
+  - 'terraform/**'
 
 env:
  AWS_REGION: eu-west-1
@@ -10,6 +13,7 @@ jobs:
  terraform:
    runs-on: ubuntu-latest
    environment: dev
+
 
    steps:
     - name: Checkout Repository
@@ -25,23 +29,34 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
 
-    - name: Terraform Init
+    - name: Get Terraform Outputs
       run: |
         cd terraform
         terraform init
+        echo "ECR_URL=$(terraform output -raw ecr_repository_url)" >> $GITHUB_ENV
+        echo "CLUSTER_NAME=$(terraform output -raw ecs_cluster_name)" >> $GITHUB_ENV
+        echo "SERVICE_NAME=$(terraform output -raw ecs_service_name)" >> $GITHUB_ENV
 
-    - name: Terraform Plan
+    - name: Login to Amazon ECR
       run: |
-        cd terraform
-        terraform plan
+        aws ecr get-login-password --region $AWS_REGION \
+        | docker login --username AWS --password-stdin $ECR_URL
 
-    - name: Terraform Apply
+    - name: Build Docker Image
       run: |
-        cd terraform
-        terraform apply -auto-approve
+        docker build -t angular-devops-app ./app
 
-    - name: Show Terraform Outputs
+    - name: Tag Docker Image
       run: |
-        cd terraform
-        terraform output
+        docker tag angular-devops-app:latest $ECR_URL:latest
 
+    - name: Push Docker Image
+      run: |
+        docker push $ECR_URL:latest
+
+    - name: Deploy to ECS
+      run: |
+        aws ecs update-service \
+        --cluster $CLUSTER_NAME \
+        --service $SERVICE_NAME \
+        --force-new-deployment
