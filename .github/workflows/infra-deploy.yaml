@@ -1,9 +1,10 @@
 name: Infrastructure Deployments
 
 on:
+ workflow_dispatch:
  push:
-    paths:
-    - 'terraform/**'
+  paths:
+  - 'terraform/**'
 
 env:
  AWS_REGION: eu-west-1
