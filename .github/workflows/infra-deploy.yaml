@@ -2,8 +2,6 @@ name: Infrastructure Deployments
 
 on:
  push:
-    branches:
-      - aws
     paths:
     - 'terraform/**'
 
