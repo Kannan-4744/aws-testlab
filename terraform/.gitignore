@@ -1,0 +1,17 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+.terraform.lock.hcl
+
+# Node
+node_modules/
+
+# Angular build
+dist/
+
+# Mac
+.DS_Store
