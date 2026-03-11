@@ -1,8 +1,11 @@
 name: EKS Angular DevOps Pipeline
 
 on:
-  workflow_dispatch:
-
+  workflow_dispatch:   # manual trigger
+  push:
+    branches:
+      - kube
+      
 env:
   AWS_REGION: us-east-1
   ECR_REPO: eks-angular-repo
