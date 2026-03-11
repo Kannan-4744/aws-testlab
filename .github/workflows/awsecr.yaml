@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - kube
-      
+
 env:
   AWS_REGION: us-east-1
   ECR_REPO: eks-angular-repo
@@ -13,7 +13,6 @@ env:
 jobs:
 
   build_push:
-
     runs-on: ubuntu-latest
     environment: dev
 
