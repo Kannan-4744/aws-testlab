@@ -1,0 +1,21 @@
+name: EKS Angular DevOps Pipeline
+
+on:
+ push:
+   branches: [ main ]
+
+env:
+ AWS_REGION: us-east-1
+ ECR_REPO: eks-angular-repo
+
+jobs:
+
+ terraform:
+  runs-on: ubuntu-latest
+  steps:
+   - uses: actions/checkout@v3
+   - name: Terraform Apply
+     run: |
+       cd terraform
+       terraform init
+       terraform apply -auto-approve
