@@ -5,3 +5,7 @@ variable "region" {
 variable "cluster_name" {
   default = "eks-angular-cluster"
 }
+
+variable "node_instance_type" {
+  default = "t3.small"
+}

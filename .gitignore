@@ -1,0 +1,85 @@
+#################################
+# Terraform
+#################################
+
+.terraform/
+.terraform.lock.hcl
+
+*.tfstate
+*.tfstate.*
+crash.log
+
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+terraform.tfvars
+terraform.tfvars.json
+
+#################################
+# Terraform plan files
+#################################
+
+*.tfplan
+
+#################################
+# AWS credentials
+#################################
+
+.aws/
+credentials
+
+#################################
+# Node / Angular
+#################################
+
+node_modules/
+
+dist/
+build/
+.tmp/
+out-tsc/
+
+npm-debug.log
+yarn-error.log
+
+#################################
+# Environment files
+#################################
+
+.env
+.env.*
+
+#################################
+# OS files
+#################################
+
+.DS_Store
+Thumbs.db
+
+#################################
+# IDE files
+#################################
+
+.vscode/
+.idea/
+
+#################################
+# Kubernetes config
+#################################
+
+kubeconfig
+.kube/
+
+#################################
+# Logs
+#################################
+
+*.log
+
+#################################
+# Docker
+#################################
+
+docker-compose.override.yml
