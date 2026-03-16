@@ -29,4 +29,9 @@ jobs:
     - name: Terraform Apply
       run: |
           cd terraform
-          terraform destroy -auto-approve
+          terraform init 
+
+    - name: Terraform Apply
+      run: |
+          cd terraform
+          terraform destroy -auto-approve      
