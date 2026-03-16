@@ -1,7 +1,7 @@
 name: EKS Angular DevOps Pipeline
 
 on:
-  workflow_dispatch:   # manual trigger
+  push:   # manual trigger
 
 env:
   AWS_REGION: us-east-1
