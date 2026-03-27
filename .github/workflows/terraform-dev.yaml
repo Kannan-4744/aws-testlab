@@ -45,7 +45,7 @@ jobs:
 
     # 7. Terraform Plan (DEV)
     - name: Terraform Plan
-      run: terraform plan -var="env=dev" -out=tfplan
+      run: terraform plan -out=tfplan
 
     # 8. Terraform Apply (DEV auto)
     - name: Terraform Apply
