@@ -1,4 +1,4 @@
-name: Deploy App
+name: Build, Push & Deploy to EKS
 
 on:
   push:
@@ -9,16 +9,19 @@ env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: angular-frontend
   EKS_CLUSTER_NAME: angular-eks
+  HELM_RELEASE_NAME: angular-app
 
 jobs:
- terraform:
-   runs-on: ubuntu-latest
-   environment: dev
+  deploy:
+    runs-on: ubuntu-latest
+    environment: dev
 
-   steps:
+    steps:
+    # 1️⃣ Checkout Code
     - name: Checkout Repository
       uses: actions/checkout@v4
 
+    # 2️⃣ Configure AWS Credentials
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -26,25 +29,54 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
         aws-region: ${{ env.AWS_REGION }}
 
-    - uses: aws-actions/amazon-ecr-login@v2
+    # 3️⃣ Login to ECR
+    - name: Login to ECR
       id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
 
-    - run: echo "IMAGE_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
+    # 4️⃣ Set Image Tag (unique per commit)
+    - name: Set Image Tag
+      run: echo "IMAGE_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
 
-    - run: docker build -t angular-frontend:$IMAGE_TAG ./angular-project
+    # 5️⃣ Build Docker Image
+    - name: Build Docker Image
+      run: |
+        docker build -t $ECR_REPOSITORY:$IMAGE_TAG ./angular-project
 
-    - run: |
-        docker tag angular-frontend:$IMAGE_TAG \
-        ${{ steps.login-ecr.outputs.registry }}/angular-frontend:$IMAGE_TAG
+    # 6️⃣ Tag Docker Image
+    - name: Tag Image
+      run: |
+        docker tag $ECR_REPOSITORY:$IMAGE_TAG \
+        ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
 
-    - run: |
-        docker push ${{ steps.login-ecr.outputs.registry }}/angular-frontend:$IMAGE_TAG
+    # 7️⃣ Push Image to ECR
+    - name: Push Image
+      run: |
+        docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
 
-    - run: aws eks update-kubeconfig --region us-east-1 --name angular-eks
+    # 8️⃣ Update kubeconfig
+    - name: Update kubeconfig
+      run: |
+        aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER_NAME
 
-    - uses: azure/setup-helm@v4
+    # 9️⃣ Install Helm
+    - name: Install Helm
+      uses: azure/setup-helm@v4
 
-    - run: |
-        helm upgrade --install angular-app ./angular-chart \
-        --set image.repository=${{ steps.login-ecr.outputs.registry }}/angular-frontend \
-        --set image.tag=$IMAGE_TAG
+    # 🔟 Deploy using Helm (IMPORTANT FIXES APPLIED)
+    - name: Deploy to EKS using Helm
+      run: |
+        helm upgrade --install $HELM_RELEASE_NAME ./angular-chart \
+          --set image.repository=${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY \
+          --set image.tag=$IMAGE_TAG \
+          --force
+
+    # 1️⃣1️⃣ Force rollout restart (ENSURE NEW IMAGE IS USED)
+    - name: Restart Deployment
+      run: |
+        kubectl rollout restart deployment angular-app-angular-chart
+
+    # 1️⃣2️⃣ Verify rollout
+    - name: Verify Deployment
+      run: |
+        kubectl rollout status deployment angular-app-angular-chart
