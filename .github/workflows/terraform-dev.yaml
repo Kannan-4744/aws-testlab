@@ -6,6 +6,7 @@ on:
       - aks
     paths:
       - 'terraform/**'
+      - '.github/workflows/**'
 
 env:
   AWS_REGION: us-east-1
