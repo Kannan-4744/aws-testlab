@@ -1,0 +1,48 @@
+name: Deploy App
+
+on:
+  push:
+    branches:
+      - aks
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: angular-frontend
+  EKS_CLUSTER_NAME: angular-eks
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - uses: aws-actions/amazon-ecr-login@v2
+      id: login-ecr
+
+    - run: echo "IMAGE_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
+
+    - run: docker build -t angular-frontend:$IMAGE_TAG ./angular-project
+
+    - run: |
+        docker tag angular-frontend:$IMAGE_TAG \
+        ${{ steps.login-ecr.outputs.registry }}/angular-frontend:$IMAGE_TAG
+
+    - run: |
+        docker push ${{ steps.login-ecr.outputs.registry }}/angular-frontend:$IMAGE_TAG
+
+    - run: aws eks update-kubeconfig --region us-east-1 --name angular-eks
+
+    - uses: azure/setup-helm@v4
+
+    - run: |
+        helm upgrade --install angular-app ./angular-chart \
+        --set image.repository=${{ steps.login-ecr.outputs.registry }}/angular-frontend \
+        --set image.tag=$IMAGE_TAG
