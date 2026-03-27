@@ -1,0 +1,60 @@
+name: Terraform Dev Deployment
+
+on:
+  push:
+    branches:
+      - aks
+    paths:
+      - 'terraform/**'
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  terraform:
+    name: Terraform Dev
+    runs-on: ubuntu-latest
+
+    # ✅ THIS IS IMPORTANT (uses dev environment secrets)
+    environment: dev
+
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+    # 1. Checkout code
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # 2. Configure AWS credentials (from DEV environment secrets)
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    # 3. Setup Terraform
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    # 4. Terraform Init
+    - name: Terraform Init
+      run: terraform init
+
+    # 5. Terraform Format
+    - name: Terraform Format
+      run: terraform fmt -check
+
+    # 6. Terraform Validate
+    - name: Terraform Validate
+      run: terraform validate
+
+    # 7. Terraform Plan (DEV)
+    - name: Terraform Plan
+      run: terraform plan -var="env=dev" -out=tfplan
+
+    # 8. Terraform Apply (DEV auto)
+    - name: Terraform Apply
+      run: terraform apply -auto-approve tfplan
