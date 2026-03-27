@@ -17,11 +17,11 @@ jobs:
     environment: dev
 
     steps:
-    # 1️⃣ Checkout Code
+    # 1️⃣ Checkout code
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    # 2️⃣ Configure AWS Credentials
+    # 2️⃣ Configure AWS credentials
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -34,22 +34,22 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
 
-    # 4️⃣ Set Image Tag (unique per commit)
+    # 4️⃣ Set unique image tag
     - name: Set Image Tag
       run: echo "IMAGE_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
 
-    # 5️⃣ Build Docker Image
+    # 5️⃣ Build Docker image
     - name: Build Docker Image
       run: |
         docker build -t $ECR_REPOSITORY:$IMAGE_TAG ./angular-project
 
-    # 6️⃣ Tag Docker Image
+    # 6️⃣ Tag image
     - name: Tag Image
       run: |
         docker tag $ECR_REPOSITORY:$IMAGE_TAG \
         ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
 
-    # 7️⃣ Push Image to ECR
+    # 7️⃣ Push image to ECR
     - name: Push Image
       run: |
         docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
@@ -63,15 +63,14 @@ jobs:
     - name: Install Helm
       uses: azure/setup-helm@v4
 
-    # 🔟 Deploy using Helm (IMPORTANT FIXES APPLIED)
+    # 🔟 Deploy using Helm (NO --force)
     - name: Deploy to EKS using Helm
       run: |
         helm upgrade --install $HELM_RELEASE_NAME ./angular-chart \
           --set image.repository=${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY \
-          --set image.tag=$IMAGE_TAG \
-          --force
+          --set image.tag=$IMAGE_TAG
 
-    # 1️⃣1️⃣ Force rollout restart (ENSURE NEW IMAGE IS USED)
+    # 1️⃣1️⃣ Force rollout restart (ensures new image is used)
     - name: Restart Deployment
       run: |
         kubectl rollout restart deployment angular-app-angular-chart
