@@ -11,30 +11,20 @@ env:
   AWS_REGION: us-east-1
 
 jobs:
-  terraform:
-    name: Terraform Dev
-    runs-on: ubuntu-latest
+ terraform:
+   runs-on: ubuntu-latest
+   environment: dev
 
-    # ✅ THIS IS IMPORTANT (uses dev environment secrets)
-    environment: dev
+   steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-    defaults:
-      run:
-        working-directory: terraform
-
-    steps:
-    # 1. Checkout code
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    # 2. Configure AWS credentials (from DEV environment secrets)
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
         aws-region: ${{ env.AWS_REGION }}
-
     # 3. Setup Terraform
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
