@@ -14,7 +14,8 @@ FROM nginx:alpine
 
 RUN rm -rf /usr/share/nginx/html/*
 
-COPY --from=build /app/dist /usr/share/nginx/html
+# 🔥 FIX HERE
+COPY --from=build /app/dist/angular-project /usr/share/nginx/html
 
 EXPOSE 80
 
