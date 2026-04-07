@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: ap-south-1
-  ACCOUNT_ID: 081139831993 ✅
+  ACCOUNT_ID: 081139831993
   ECR_REPO: demo-frontend
   IMAGE_TAG: latest
 
@@ -15,6 +15,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: dev
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,8 +36,7 @@ jobs:
 
       - name: Tag Image
         run: |
-          docker tag $ECR_REPO:$IMAGE_TAG \
-          $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+          docker tag $ECR_REPO:$IMAGE_TAG $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
 
       - name: Push Image
         run: |
