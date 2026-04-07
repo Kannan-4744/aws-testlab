@@ -8,7 +8,8 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build --configuration production
+# ✅ FIX HERE
+RUN npm run build
 
 
 # STEP 2: Serve using nginx
