@@ -7,7 +7,7 @@ paths:
 branches: [ rahul ]
 
 env:
-AWS_REGION: eu-west-1
+AWS_REGION: ap-south-1
 ACCOUNT_ID: 081139831993
 ECR_REPO: demo-backend
 IMAGE_TAG: latest
@@ -15,7 +15,7 @@ IMAGE_TAG: latest
 jobs:
 build:
 runs-on: ubuntu-latest
-   environment: dev
+environment: dev
 
 steps:
 - name: Checkout Code
