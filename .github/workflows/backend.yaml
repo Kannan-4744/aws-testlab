@@ -32,7 +32,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t $ECR_REPO:$IMAGE_TAG ./backend-app
+          docker build -t $ECR_REPO:$IMAGE_TAG ./backend
 
       - name: Tag Image
         run: |
