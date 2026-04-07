@@ -1,9 +1,7 @@
 name: Frontend Build & Push
 
 on:
-  workflow_dispatch: 
-    branches:
-      - rahul
+  push: 
 
 env:
   AWS_REGION: ap-south-1
