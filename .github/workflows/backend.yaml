@@ -2,8 +2,6 @@ name: Backend Build & Push
 
 on:
   push:
-    paths:
-      - 'backend-app/**'
     branches:
       - rahul
 
