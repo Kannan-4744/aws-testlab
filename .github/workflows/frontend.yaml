@@ -1,7 +1,7 @@
 name: Frontend Build & Push
 
 on:
-  push:
+  workflow_dispatch: 
     branches:
       - rahul
 
