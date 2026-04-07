@@ -1,10 +1,10 @@
 name: Backend Build & Push
 
 on:
-push:
-paths:
-- 'backend/**'
-branches: [ rahul ]
+  push:
+    paths:
+      - 'backend/**'
+    branches: [ rahul ]
 
 env:
 AWS_REGION: ap-south-1
