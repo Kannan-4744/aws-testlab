@@ -7,14 +7,13 @@ on:
 
 env:
   AWS_REGION: ap-south-1
-  ACCOUNT_ID: 081139831993
+  ACCOUNT_ID: 081139831993 
   ECR_REPO: demo-backend
   IMAGE_TAG: latest
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: dev
 
     steps:
       - name: Checkout
