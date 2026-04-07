@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: prod
+data:
+  SPRING_DATASOURCE_URL: jdbc:mysql://myapp-db.c3miyesogyny.ap-south-1.rds.amazonaws.com:3306/myapp
+  SPRING_DATASOURCE_USERNAME: admin
