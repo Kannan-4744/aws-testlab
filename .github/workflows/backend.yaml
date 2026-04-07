@@ -1,0 +1,61 @@
+name: Backend Build & Push
+
+on:
+push:
+paths:
+- 'backend/**'
+branches: [ rahul ]
+
+env:
+AWS_REGION: eu-west-1
+ACCOUNT_ID: 081139831993
+ECR_REPO: demo-backend
+IMAGE_TAG: latest
+
+jobs:
+build:
+runs-on: ubuntu-latest
+   environment: dev
+
+steps:
+- name: Checkout Code
+  uses: actions/checkout@v4
+
+- name: Setup Java
+  uses: actions/setup-java@v4
+  with:
+    java-version: '17'
+    distribution: 'temurin'
+
+- name: Build JAR
+  run: |
+    cd backend
+    mvn clean package -DskipTests
+
+- name: Configure AWS Credentials
+  uses: aws-actions/configure-aws-credentials@v4
+  with:
+    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+    aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+    aws-region: ${{ env.AWS_REGION }}
+
+- name: Login to ECR
+  run: |
+    aws ecr get-login-password --region $AWS_REGION \
+    | docker login --username AWS --password-stdin \
+    $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+- name: Build Docker Image
+  run: |
+    docker build -t $ECR_REPO ./backend
+
+- name: Tag Image
+  run: |
+    docker tag $ECR_REPO:$IMAGE_TAG \
+    $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+
+- name: Push Image
+  run: |
+    docker push \
+    $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+
