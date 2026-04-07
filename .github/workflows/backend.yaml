@@ -15,16 +15,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: dev
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: rahul 
+
       - name: Debug repo
         run: |
           pwd
           ls -R
+
       - name: Configure AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -36,9 +35,8 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build Docker Image
-        working-directory: ./backend
         run: |
-          docker build -t $ECR_REPO:$IMAGE_TAG 
+          docker build -t $ECR_REPO:$IMAGE_TAG ./backend
 
       - name: Tag Image
         run: |
