@@ -1,22 +1,21 @@
-name: Frontend Build & Pushs
+name: Frontend Build & Push
 
 on:
   push:
-    paths:
-      - 'frontend-app/**'
     branches:
       - rahul
+    paths:
+      - 'frontend-app/**'
 
 env:
   AWS_REGION: ap-south-1
-  ACCOUNT_ID: 081139831993
+  ACCOUNT_ID: 081139831993 ✅
   ECR_REPO: demo-frontend
   IMAGE_TAG: latest
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: dev
 
     steps:
       - name: Checkout
@@ -31,8 +30,8 @@ jobs:
 
       - name: Login to ECR
         run: |
-          aws ecr get-login-password --region $AWS_REGION \
-          | docker login --username AWS --password-stdin \
+          aws ecr get-login-password --region $AWS_REGION | \
+          docker login --username AWS --password-stdin \
           $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
       - name: Build Docker Image
@@ -46,5 +45,4 @@ jobs:
 
       - name: Push Image
         run: |
-          docker push \
-          $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
+          docker push $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:$IMAGE_TAG
